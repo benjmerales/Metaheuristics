@@ -4,11 +4,9 @@
 
  */
 package GWO;
-import PSO.Particle;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Collection;
 
 public class GrayWolfOptimization {
     /* GRAY WOLF PARAMETERS */
@@ -19,7 +17,21 @@ public class GrayWolfOptimization {
     private int upperBound;
     private int dim;
     private int searchAgents_no;
+    private int MAX_EPOCHS;
+    private int PACK_NUMBER;
     private int max_iter;
+    /****** VARIABLES FOR Python implementation for GWO **********/
+    float[] Alpha_pos = new float[dim]; // pos init arrays
+    float[] Beta_pos = new float[dim];
+    float[] Delta_pos = new float[dim];
+
+    int Alpha_score = Integer.MAX_VALUE; // set to inf
+    int Beta_score = Integer.MAX_VALUE;
+    int Delta_score = Integer.MAX_VALUE;
+
+    float[] arr_lb = new float[dim]; // init arr bounds
+    float[] arr_ub = new float[dim];
+    /****** VARIABLES FOR Python implementation for GWO **********/
 
     private ArrayList<Wolf> wolves;
     private ArrayList<Wolf> solutions;
@@ -39,127 +51,163 @@ public class GrayWolfOptimization {
         max_shuffle = 20;
     }
 
-
-    public boolean algorithm(){
-        boolean done = true;
-        float[] Alpha_pos = new float[dim]; // pos init arrays
-        float[] Beta_pos = new float[dim];
-        float[] Delta_pos = new float[dim];
-
-        int Alpha_score = Integer.MAX_VALUE; // set to inf
-        int Beta_score = Integer.MAX_VALUE;
-        int Delta_score = Integer.MAX_VALUE;
-
-        float[] arr_lb = new float[dim]; // init arr bounds
-        float[] arr_ub = new float[dim];
-
+    public void setBounds(){
         for(int i=0; i<dim; i++){
             arr_lb[i] = lowerBound;
             arr_ub[i] = upperBound;
         } // is instance portion
-
-        float[][] Positions = new float[searchAgents_no][dim]; // Initialize the positions of search agents
+    }
+    public float[][] initializePositions(int searchAgents_no, int dim){
+        float[][] Positions = new float[searchAgents_no][dim];
         for (int i = 0; i < searchAgents_no; i++) {
             for (int j = 0; j < dim; j++) {
                 Positions[i][j] = (R.nextFloat() * (arr_ub[i] - arr_lb[i])) + arr_lb[i] ;
             }
         }
-        int[] Convergence_curve = new int[max_iter];
+        return Positions;
+    }
+    public boolean algorithm(){
+        wolves = new ArrayList<Wolf>();
+        solutions = new ArrayList<Wolf>();
 
-        System.out.println("GWO is optimizing "); // loop counter
-        long startTime = System.nanoTime();
+        epoch = 0;
+        boolean done = true;
+        Wolf aWolf = null;
 
-        // Main Loop
-        for(int l=0; l<max_iter; l++){
-            for (int i = 0; i < searchAgents_no; i++) {
+        initialize();
 
-                // Return back the search agents that go beyond the boundaries of the search space
-                for (int j = 0; j < dim; j++) {
-                    Positions[i][j] = clip(Positions[i][j], arr_lb[i], arr_ub[i]);
+        while(!done){
+            if(epoch < MAX_EPOCHS){
+                for (int h = 0; h< PACK_NUMBER; h++ ){
+                    aWolf = wolves.get(h);
+                    aWolf.computeConflicts();
+                    if(aWolf.getConflicts() == 0){
+                        done = true;
+                    }
+                    // TODO: ALGORITHM STARTS HERE
+                    // Variables from here on out is on instance variable
+
+                    setBounds();
+                    float[][] Positions = initializePositions(searchAgents_no, dim); // Initialize the positions of search agents
+                    int[] Convergence_curve = new int[max_iter];
+
+                    System.out.println("GWO is optimizing "); // loop counter
+                    // Main Loop
+                    for(int l=0; l<max_iter; l++){
+                        for (int i = 0; i < searchAgents_no; i++) {
+
+                            // Return back the search agents that go beyond the boundaries of the search space
+                            for (int j = 0; j < dim; j++) {
+                                Positions[i][j] = clip(Positions[i][j], arr_lb[i], arr_ub[i]);
+                            }
+
+                            int fitness = objf(Positions[i]);
+
+                            if (fitness < Alpha_score) {
+                                Delta_score = Beta_score;
+                                Delta_pos = Beta_pos.clone();
+                                Beta_score = Alpha_score;
+                                Beta_pos = Alpha_pos.clone();
+                                Alpha_score = fitness;
+                                Alpha_pos = Positions[i].clone(); // Update alpha
+                            }
+                            if (fitness > Alpha_score && fitness < Beta_score) {
+                                Delta_score = Beta_score; // Update delta
+                                Delta_pos = Beta_pos.clone();
+                                Beta_score = fitness; // Update beta
+                                Beta_pos = Positions[i].clone();
+                            }
+                            if (fitness > Alpha_score && fitness > Beta_score && fitness < Delta_score) {
+                                Delta_score = fitness; // update delta
+                                Delta_pos = Positions[i].clone();
+                            }
+                        }
+                        float a = 2 - l * ((2) / max_iter); // a decreases linearly from 2 to 0
+                        // Update the position of search agents including omegas
+                        for (int i = 0; i < searchAgents_no; i++) {
+                            for (int j = 0; j < dim; j++) {
+                                Random R = new Random();
+                                float r1 = R.nextFloat(); // Random [0,1]
+                                float r2 = R.nextFloat(); // Random [0,1]
+
+                                float A1 = 2 * a * r1 - a;
+
+                                float C1 = 2 * r2;
+
+                                float D_alpha = Math.abs(C1 * Alpha_pos[i] - Positions[i][j]);
+
+                                float X1 = Alpha_pos[i] - A1 * D_alpha;
+
+                                r1 = R.nextFloat(); // Random [0,1]
+                                r2 = R.nextFloat(); // Random [0,1]
+
+                                float A2 = 2 * a * r1 - a;
+
+                                float C2 = 2 * r2;
+
+                                float D_beta = Math.abs(C2 * Beta_pos[i] - Positions[i][j]);
+
+                                float X2 = Beta_pos[i] - A2 * D_beta;
+
+                                r1 = R.nextFloat(); // Random [0,1]
+                                r2 = R.nextFloat(); // Random [0,1]
+
+                                float A3 = 2 * a * r1 - a;
+
+                                float C3 = 2 * r2;
+
+                                float D_delta = Math.abs(C3 * Delta_pos[i] - Positions[i][j]);
+
+                                float X3 = Delta_pos[i] - A3 * D_delta;
+
+                                Positions[i][j] = (X1 + X2 + X3) / 3;
+                            }
+                        }
+                        Convergence_curve[l] = Alpha_score;
+
+                        System.out.println("At iteration " + l + " the best fitness is " + Alpha_score);
+                    }
                 }
-
-                int fitness = objf(Positions[i]);
-
-                if (fitness < Alpha_score) {
-                    Delta_score = Beta_score;
-                    Delta_pos = Beta_pos.clone();
-                    Beta_score = Alpha_score;
-                    Beta_pos = Alpha_pos.clone();
-                    Alpha_score = fitness;
-                    Alpha_pos = Positions[i].clone(); // Update alpha
-                }
-                if (fitness > Alpha_score && fitness < Beta_score) {
-                    Delta_score = Beta_score; // Update delta
-                    Delta_pos = Beta_pos.clone();
-                    Beta_score = fitness; // Update beta
-                    Beta_pos = Positions[i].clone();
-                }
-                if (fitness > Alpha_score && fitness > Beta_score && fitness < Delta_score) {
-                    Delta_score = fitness; // update delta
-                    Delta_pos = Positions[i].clone();
-                }
+                epoch ++;
+                System.out.println("Epoch: " + epoch);
             }
-            float a = 2 - l * ((2) / max_iter); // a decreases linearly from 2 to 0
-            // Update the position of search agents including omegas
-            for (int i = 0; i < searchAgents_no; i++) {
-                for (int j = 0; j < dim; j++) {
-                    Random R = new Random();
-                    float r1 = R.nextFloat(); // Random [0,1]
-                    float r2 = R.nextFloat(); // Random [0,1]
-
-                    float A1 = 2 * a * r1 - a;
-
-                    float C1 = 2 * r2;
-
-                    float D_alpha = Math.abs(C1 * Alpha_pos[i] - Positions[i][j]);
-
-                    float X1 = Alpha_pos[i] - A1 * D_alpha;
-
-                    r1 = R.nextFloat(); // Random [0,1]
-                    r2 = R.nextFloat(); // Random [0,1]
-
-                    float A2 = 2 * a * r1 - a;
-
-                    float C2 = 2 * r2;
-
-                    float D_beta = Math.abs(C2 * Beta_pos[i] - Positions[i][j]);
-
-                    float X2 = Beta_pos[i] - A2 * D_beta;
-
-                    r1 = R.nextFloat(); // Random [0,1]
-                    r2 = R.nextFloat(); // Random [0,1]
-
-                    float A3 = 2 * a * r1 - a;
-
-                    float C3 = 2 * r2;
-
-                    float D_delta = Math.abs(C3 * Delta_pos[i] - Positions[i][j]);
-
-                    float X3 = Delta_pos[i] - A3 * D_delta;
-
-                    Positions[i][j] = (X1 + X2 + X3) / 3;
-                }
+            else{
+                done = true;
             }
-            Convergence_curve[l] = Alpha_score;
-
-            System.out.println("At iteration " + l + " the best fitness is " + Alpha_score);
         }
-        long endTime = System.nanoTime();
-        System.out.println("Total runtime is " + (float)(endTime-startTime)/1000000000 + " seconds.");
+        System.out.println("done");
+        if(epoch == MAX_EPOCHS){
+            System.out.println("No Solution Found");
+            done = false;
+        }
+        for( Wolf w : wolves){
+            if(w.getConflicts() == 0){
+                System.out.println("SOLUTION");
+                solutions.add(w);
+
+                System.out.println("conflicts: " + w.getConflicts());
+            }
+        }
+
 
         return done;
     }
     public void initialize(){
         int shuffles = 0;
         Wolf newWolf = null;
-        int wolfIndex = 0;
+        int newWolfIndex = 0;
         for(int i=0; i < dim; i++){
             newWolf = new Wolf(MAX_LENGTH);
             wolves.add(newWolf);
-            wolfIndex = wolves.indexOf(newWolf);
+            newWolfIndex = wolves.indexOf(newWolf);
 
             shuffles = getRandomNumber(min_shuffle, max_shuffle);
 
+            for( int j=0; j< shuffles; j++){
+                randomlyArrange(newWolfIndex);
+            }
+
+            wolves.get(newWolfIndex).computeConflicts();
         }
     }
     /* Gets a random number in the range of the parameters
