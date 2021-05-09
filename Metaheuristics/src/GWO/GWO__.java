@@ -140,8 +140,8 @@ public class GWO__ {
             if(x > max) x = max;
         return x;
     }
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         GWO__ G = new GWO__(-100,100,30,5, 1000);
         G.greyWolfAlgo();
-    }
+    }*/
 }

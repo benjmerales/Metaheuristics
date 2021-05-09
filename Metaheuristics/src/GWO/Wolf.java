@@ -3,7 +3,8 @@ package GWO;
 public class Wolf {
     private int MAX_LENGTH;
     private int conflicts;
-    private int pos[];
+    private double fitness;
+    private int[] pos;
 
 
     /* Instantiates a wolf
@@ -12,6 +13,10 @@ public class Wolf {
     * */
     public Wolf(int n){
         this.MAX_LENGTH = n;
+        this.pos = new int[MAX_LENGTH];
+        this.conflicts = 0;
+        this.fitness = 0.0;
+        initPos();
     }
 
     /* Compares two wolf.

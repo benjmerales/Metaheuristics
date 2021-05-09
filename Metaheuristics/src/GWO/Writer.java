@@ -42,7 +42,7 @@ public class Writer {
 		clearBoard(board, n);
 
 		for(int x = 0; x < n; x++) {
-			board[x][w.getConflicts()] = "Q";
+			board[x][w.getPos(x)] = "Q";
 		}
 
 		printBoard(board, n);
