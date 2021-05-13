@@ -14,6 +14,7 @@ public class TesterGWO {
         logWriter = new Writer();
         MAX_RUN = 50;
         runtimes = new long[MAX_RUN];
+        gwo = new GrayWolfOptimization(MAX_LENGTH);
     }
 
     /* Test method accepts the N/max length, and parameters mutation rate and max epoch to set for the ABC accordingly.
@@ -45,7 +46,7 @@ public class TesterGWO {
                 System.out.println("run "+(i+1));
                 System.out.println("time in nanoseconds: "+totalTime);
                 System.out.println("Success!");
-
+                System.out.println("____________________________________________________");
                 runtimes[i] = totalTime;
                 i++;
                 success++;
@@ -58,9 +59,12 @@ public class TesterGWO {
                 logWriter.add("");
 
                 for(Wolf w: gwo.getWolves()) {                              //write solutions to log file
-                    logWriter.add(w);
-                    logWriter.add("");
+                    if(w.getConflicts() == 0) {
+                        logWriter.add(w);
+                        logWriter.add("");
+                    }
                 }
+                logWriter.add("___________________________________________");
             } else {                                                                //count failures for failing criteria
                 fail++;
                 System.out.println("Fail!");
@@ -74,14 +78,14 @@ public class TesterGWO {
             endTime = 0;
             totalTime = 0;
         }
-
-        System.out.println("Number of Success: " +success);
-        System.out.println("Number of failures: "+fail);
-        logWriter.add("Runtime summary");
+        System.out.println("\n~~~~ Iteration Complete! ~~~~\n");
+        System.out.println("Number of Success: " + success);
+        System.out.println("Number of failures: "+ fail);
+        logWriter.add("\n\tRuntime summary");
         logWriter.add("");
 
         for(int x = 0; x < runtimes.length; x++){                                   //print runtime summary
-            logWriter.add(Long.toString(runtimes[x]));
+            logWriter.add("\t\t" + Long.toString(runtimes[x]));
         }
 
         long testEnd = System.nanoTime();
