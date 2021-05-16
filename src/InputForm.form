@@ -33,6 +33,7 @@
           <hideActionText value="false"/>
           <horizontalTextPosition value="0"/>
           <icon value="button.png"/>
+          <rolloverIcon value="button_hover.gif"/>
           <text value="Clear"/>
         </properties>
       </component>

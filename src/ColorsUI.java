@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 
 public interface ColorsUI {
     Color BG1 = new Color(152,183,222);
@@ -14,7 +15,12 @@ public interface ColorsUI {
             i.setFocusable(false);
             i.setFocusPainted(false);
             i.setIgnoreRepaint(false);
-            i.setRolloverEnabled(false);
+            URL imageURL = ColorsUI.class.getResource("button_hover.gif");
+            //Graphics2D g2d = (Graphics2D) imageURL.create();
+            //g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_DITHERING,RenderingHints.VALUE_RENDER_QUALITY));
+            i.setRolloverIcon(new ImageIcon(imageURL));
         }
     }
 }
+
+

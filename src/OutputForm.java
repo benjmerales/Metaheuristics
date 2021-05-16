@@ -49,14 +49,8 @@ public class OutputForm extends JFrame {
         boardIndex = 0;
         runIndex = 0;
         display(runIndex);
-        for(JButton i: buttons){
-            i.setBackground(new Color(152,183,222));
-            i.setBorder(null);
-            i.setFocusable(false);
-            i.setFocusPainted(false);
-            i.setIgnoreRepaint(false);
-            i.setRolloverEnabled(false);
-        }
+        ColorsUI.button_init(buttons,1);
+
         previousRunButton.addActionListener(e -> {
             runIndex = decrease(runIndex, CW.getNumberOfRuns() - 1);
             display(runIndex);
