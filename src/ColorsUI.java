@@ -16,8 +16,6 @@ public interface ColorsUI {
             i.setFocusPainted(false);
             i.setIgnoreRepaint(false);
             URL imageURL = ColorsUI.class.getResource("button_hover.gif");
-            //Graphics2D g2d = (Graphics2D) imageURL.create();
-            //g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_DITHERING,RenderingHints.VALUE_RENDER_QUALITY));
             i.setRolloverIcon(new ImageIcon(imageURL));
         }
     }
