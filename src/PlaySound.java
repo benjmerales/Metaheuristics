@@ -1,9 +1,10 @@
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import java.net.URL;
 
 public class PlaySound {
-    private String bgm = "bgm.wav";
+    private String bgm = "resources/bgm.wav";
 
     public void play() {
         new Thread(new Runnable() {

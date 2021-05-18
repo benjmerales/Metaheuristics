@@ -153,17 +153,14 @@ public class GrayWolfOptimization {
                 done = true;
             }
         }
-        System.out.println("done");
         if(epoch == MAX_EPOCHS){
             System.out.println("No Solution Found");
             done = false;
         }
         for( Wolf w : wolves){
             if(w.getConflicts() == 0){
-                System.out.println("SOLUTION");
                 solutions.add(w);
-                printSolution(w);
-                System.out.println("conflicts: " + w.getConflicts());
+                //printSolution(w);
             }
         }
         return done;
@@ -244,7 +241,7 @@ public class GrayWolfOptimization {
     /*
     Todo: Insert Documentation here
      */
-    public void printSolution(Wolf solution) {
+    /*public void printSolution(Wolf solution) {
         String board[][] = new String[MAX_LENGTH][MAX_LENGTH];
 
         // Clear the board.
@@ -270,7 +267,7 @@ public class GrayWolfOptimization {
             }
             System.out.print("\n");
         }
-    }
+    }*/
     /* Changes a position of the queens in a particle by swapping a randomly selected position
      *
      * @param: index of the particle

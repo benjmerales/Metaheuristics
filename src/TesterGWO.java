@@ -116,8 +116,8 @@ public class TesterGWO {
         }   
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         TesterGWO tester = new TesterGWO();
         tester.test(4, 4, 1000);
-    }
+    }*/
 }

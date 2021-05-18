@@ -58,19 +58,6 @@ public class ComponentWriter {
             e.printStackTrace();
         }
     }
-    public void getDataAtIndex(int index){
-
-        System.out.println("Run: " + run_IDs.get(index));
-        System.out.println("Board Size: " + N);
-        System.out.println("Runtime at nanoseconds " + runtimes.get(index));
-        System.out.println("Found at Epoch: " + epoch_IDs.get(index));
-        System.out.println("Population size: " + population_sizes.get(index));
-        int counter = 1;
-        for(String boards: all_boards.get(index)){
-            System.out.println("Board " + counter++ + ": ");
-            System.out.println(boards);
-        }
-    }
     public int findNumberOnString(String temp){
         return Integer.parseInt(temp.replaceAll("[^0-9]+", ""));
     }
