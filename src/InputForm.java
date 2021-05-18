@@ -1,7 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.ImageObserver;
+import java.text.AttributedCharacterIterator;
 
-public class InputForm extends JFrame implements  ColorsUI{
+public class InputForm extends JFrame{
     //<editor-fold desc="TextFields">
     private JTextField lowerBoundField;
     private JTextField upperBoundField;
@@ -18,14 +20,15 @@ public class InputForm extends JFrame implements  ColorsUI{
     private JButton clearButton;
     private JPanel inputPanel;
     //</editor-fold>
-    private JTextField[] fields = {maxLengthField, trialLimitField, maxEpochField, lowerBoundField, upperBoundField, packNumberField, searchAgents_field, maxIterField, minShuffleField, maxShuffleField};
     private JButton[] buttons = {submitButton, clearButton};
     private int[] inputs;
+    private JTextField[] fields = {maxLengthField, trialLimitField, maxEpochField, lowerBoundField, upperBoundField, packNumberField, searchAgents_field, maxIterField, minShuffleField, maxShuffleField};
     public InputForm(){
         this.setTitle("Initialize Parameters");
         this.setContentPane(mainPanel);
         this.pack();
         this.setLocationRelativeTo(null);
+        this.setIconImage(new ImageIcon("src/resources/wolf1.png").getImage());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         PlaySound PS = new PlaySound();
         PS.play();
@@ -46,8 +49,8 @@ public class InputForm extends JFrame implements  ColorsUI{
             Output.setVisible(true);
             this.dispose();
         });
-    }
 
+    }
 
     public static void main(String[] args) {
         InputForm form = new InputForm();
