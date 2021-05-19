@@ -15,6 +15,12 @@ public class SolverGWO {
         runtimes = new long[MAX_RUN];
         gwo = new GrayWolfOptimization(MAX_LENGTH);
     }
+    public SolverGWO(int max_run) {
+        logWriter = new Writer();
+        MAX_RUN = max_run;
+        runtimes = new long[MAX_RUN];
+        gwo = new GrayWolfOptimization(MAX_LENGTH);
+    }
 
     /* Test method accepts the N/max length, and parameters mutation rate and max epoch to set for the ABC accordingly.
      *
@@ -59,7 +65,6 @@ public class SolverGWO {
                 logWriter.add("___________________________________________");
             } else {                                                                //count failures for failing criteria
                 fail++;
-                System.out.println("Fail!");
             }
 
             if(fail >= 100) {

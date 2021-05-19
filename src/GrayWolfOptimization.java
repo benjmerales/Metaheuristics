@@ -59,7 +59,7 @@ public class GrayWolfOptimization {
     }
     public GrayWolfOptimization(int n, int[] inputs){
         //                                  0               1               2               3               4                   5                   6               7           8                   9
-//      private JTextField[] fields = {maxLengthField, trialLimitField, maxEpochField, lowerBoundField, upperBoundField, packNumberField, searchAgents_field, maxIterField, minShuffleField, maxShuffleField};
+//      private JTextField[] fields = {maxLengthField, trialLimitField, maxEpochField, lowerBoundField, upperBoundField, packNumberField, searchAgents_field, max_run, minShuffleField, maxShuffleField};
         MAX_LENGTH = n;
         LOWERBOUND = inputs[3];
         UPPERBOUND = inputs[4];
@@ -154,7 +154,6 @@ public class GrayWolfOptimization {
             }
         }
         if(epoch == MAX_EPOCHS){
-            System.out.println("No Solution Found");
             done = false;
         }
         for( Wolf w : wolves){

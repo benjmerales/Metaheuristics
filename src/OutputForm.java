@@ -1,7 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class OutputForm extends JFrame {
     //<editor-fold desc="Components">
@@ -83,6 +86,8 @@ public class OutputForm extends JFrame {
     private JLabel grid_7_7;
     private JLabel titleBoardNumber;
     private JPanel Board;
+    private JButton backButton;
+    private JButton exitButton;
     private ComponentWriter CW;
 
     private ArrayList<String> solutions;
@@ -103,15 +108,16 @@ public class OutputForm extends JFrame {
     private JButton[] buttons = {nextBoardButton, nextRunButton, previousBoardButton, previousRunButton};
     //</editor-fold>
     public OutputForm(int[] inputs){
-//        private JTextField[] fields = {maxLengthField, trialLimitField, maxEpochField, lowerBoundField, upperBoundField, packNumberField, searchAgents_field, maxIterField, minShuffleField, maxShuffleField};
+//        private JTextField[] fields = {maxLengthField, trialLimitField, maxEpochField, lowerBoundField, upperBoundField, packNumberField, searchAgents_field, maxRunField, minShuffleField, maxShuffleField};
         this.setTitle("N-Queens Solution Using Swarm Intelligence: Grey Wolf Optimization Algorithm");
         this.setContentPane(mainPanel);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setIconImage(new ImageIcon("src/resources/wolf1.png").getImage());
+        this.setUndecorated(true);
         solutions = new ArrayList<>();
-        solver = new SolverGWO();
+        solver = new SolverGWO(inputs[7]);
         restart_board();
         solver.test(inputs[0], inputs[1], inputs[2]);
         String filepath = "GWO-N" + inputs[0] + "-" + inputs[1] + "-" + inputs[2] + ".txt";
@@ -119,16 +125,20 @@ public class OutputForm extends JFrame {
         CW.parseFile();
         boardIndex = 0;
         runIndex = 0;
-        display(runIndex);
-        constructBoard(runIndex);
+        if(solver.MAX_LENGTH >= 5){
+            JOptionPane.showMessageDialog(null, "Board size too big! Size should be 0 < size < 9 to have visualization. \nCheck Output text: "+ filepath + " instead.\tPlease go back to Input Form");
+        }
+        else {
+            display(runIndex);
+            constructBoard(runIndex);
+        }
         for(JButton i: buttons){
             i.setBackground(new Color(152,183,222));
             i.setBorder(null);
             i.setFocusable(false);
             i.setFocusPainted(false);
             i.setIgnoreRepaint(false);
-            i.setRolloverIcon(new ImageIcon("src/resources/button_hover.gif"));
-
+            i.setContentAreaFilled(false);
         }
         previousRunButton.addActionListener(e -> {
             runIndex = decrease(runIndex, CW.getNumberOfRuns());
@@ -157,7 +167,21 @@ public class OutputForm extends JFrame {
             restart_board();
             constructBoard(boardIndex);
         });
-        grid_7_7.setBackground(Color.red);
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int process = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?");
+                if(process == JOptionPane.YES_OPTION) System.exit(0);
+            }
+        });
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                InputForm I = new InputForm();
+                I.setVisible(true);
+                dispose();
+            }
+        });
     }
     public void restart_board(){
         for (int i = 0; i < grid_labels.length; i++) {
@@ -217,10 +241,15 @@ public class OutputForm extends JFrame {
                 else{
                     grid_labels[i][j].setText("");
                     grid_labels[i][j].setBackground(Color.GREEN);
-                    grid_labels[i][j].setIcon(new ImageIcon("src/resources/wolf1_colored.png"));
+                    grid_labels[i][j].setIcon(new ImageIcon("src/resources/wolf" + getRandomNumber(1,3) +"_colored.png"));
+
                 }
             }
         }
+    }
+    public int getRandomNumber(int low, int high) {
+        Random R = new Random();
+        return (int)Math.round((high - low) * R.nextDouble() + low);
     }
     /*
     public static void main(String[] args) {

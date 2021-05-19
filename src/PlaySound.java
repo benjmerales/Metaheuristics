@@ -1,13 +1,12 @@
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import java.net.URL;
 
 public class PlaySound {
-    private String bgm = "bgm.wav";
-
+    private String bgm = "resources/bgm.wav";
     public void play() {
         new Thread(new Runnable() {
-
             @Override
             public void run() {
                 try {
@@ -19,7 +18,6 @@ public class PlaySound {
                         try { Thread.sleep(2000); } catch(InterruptedException ie) {}
                         if(!clip.isActive()) break;
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
